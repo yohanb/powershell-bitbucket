@@ -4,9 +4,9 @@
 .DESCRIPTION
    This script uses the 'Resource Owner Password Credentials Grant' OAuth2 flow to acquire an access token for the specified consumer.
 .EXAMPLE
-   Get-BitbucketAccessToken -ConsumerKey abcd1234 -ConsumerSecret abcd1234abcd1234
+   Get-BitbucketAccessToken -ConsumerKey abcd1234 -ConsumerSecret $consumerSecret
 .EXAMPLE
-   Get-BitbucketAccessToken -ConsumerKey abcd1234 -ConsumerSecret abcd1234abcd1234 -BitbucketCredential $credential
+   Get-BitbucketAccessToken -ConsumerKey abcd1234 -ConsumerSecret $consumerSecret -BitbucketCredential $credential
 #>
 function Get-BitbucketAccessToken() {
     Param(
@@ -14,7 +14,7 @@ function Get-BitbucketAccessToken() {
         [string]$ConsumerKey,
 
         [Parameter(Mandatory=$true)]
-        [string]$ConsumerSecret,
+        [Security.SecureString]$ConsumerSecret,
 
         [Parameter()]
         [PSCredential]$BitbucketCredential,
@@ -30,7 +30,10 @@ function Get-BitbucketAccessToken() {
     # Construct BitBucket request
     # For more information, see the "Resource Owner Password Credentials Grant" section here:
     # https://developer.atlassian.com/bitbucket/concepts/oauth2.html
-    $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $ConsumerKey, $ConsumerSecret)))
+    $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes((
+        "{0}:{1}" -f $ConsumerKey, `
+        [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($ConsumerSecret)))))
+        
     $requestBody = @{
         grant_type = 'password'
         username = $BitbucketCredential.UserName
