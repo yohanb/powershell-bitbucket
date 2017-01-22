@@ -7,6 +7,6 @@ Push-Location $PSScriptRoot
 . .\OAuth.ps1
 
 Export-ModuleMember `
-    -Function @('Get-BitbucketAccessToken')
+    -Function @('Get-BitbucketAccessToken', 'Login-BitbucketAccount')
 
 Push-Location $currentWorkingFolder
