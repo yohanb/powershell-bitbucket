@@ -23,8 +23,14 @@ function Get-BitbucketAccessToken() {
         [string]$AccessTokenEndpointUrl = "https://bitbucket.org/site/oauth2/access_token"
     )
 
+    # Store credentials in current session so you don't have to constantly reenter it
     if ($BitbucketCredential -eq $null) {
-        $BitbucketCredential = Get-Credential -Message "Enter your Bitbucket email and password."
+
+        if(!(Test-Path Variable::global:BitbucketCredential)-or($global:BitbucketCredential-isnot[PSCredential])){
+            $global:BitbucketCredential=Get-Credential -Message "Enter your Bitbucket email and password."
+        }
+
+        $BitbucketCredential=$global:BitbucketCredential
     }
 
     # Construct BitBucket request
