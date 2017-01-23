@@ -45,6 +45,9 @@ function Get-BitbucketAccessToken() {
         [string]$AccessTokenEndpointUrl = "https://bitbucket.org/site/oauth2/access_token"
     )
 
+    # Login if not already done
+    Login-BitbucketAccount
+
     # Construct BitBucket request
     # For more information, see the "Resource Owner Password Credentials Grant" section here:
     # https://developer.atlassian.com/bitbucket/concepts/oauth2.html
@@ -54,8 +57,8 @@ function Get-BitbucketAccessToken() {
         
     $requestBody = @{
         grant_type = 'password'
-        username = $BitbucketCredential.UserName
-        password = $BitbucketCredential.GetNetworkCredential().Password 
+        username = $global:BitbucketCredential.UserName
+        password = $global:BitbucketCredential.GetNetworkCredential().Password 
     }
 
     # Perform the request to Bitbucket OAuth2.0
